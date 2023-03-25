@@ -14,4 +14,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\alsatcomAPI.Application\alsatcomAPI.Application.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\alsatcomAPI.Infrastructure\alsatcomAPI.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\alsatcomAPI.Persistence\alsatcomAPI.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>
