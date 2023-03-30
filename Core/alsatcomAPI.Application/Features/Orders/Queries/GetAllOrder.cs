@@ -1,4 +1,8 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
+using alsatcomAPI.Application.ViewModels.Orders;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
 using System;
@@ -14,7 +18,7 @@ namespace alsatcomAPI.Application.Features.Orders.Queries
     }
     public class GetAllOrderQueryResponse
     {
-        public List<Order> Orders { get; set; }
+        public DataResult<List<VM_Order>> Result { get; set; }
     }
     public class GetAllOrderQueryHandler : IRequestHandler<GetAllOrderQueryRequest, GetAllOrderQueryResponse>
     {
@@ -27,9 +31,21 @@ namespace alsatcomAPI.Application.Features.Orders.Queries
 
         public async Task<GetAllOrderQueryResponse> Handle(GetAllOrderQueryRequest request, CancellationToken cancellationToken)
         {
-            List<Order> orders = _orderReadRepository.GetAll(false).ToList();
+            try
+            {
+                List<VM_Order> orders = _orderReadRepository.GetAll(false).Select(o => new VM_Order
+                {
+                    CustomerId = o.CustomerId.ToString(),
+                    Adress = o.Adress,
 
-            return new() { Orders = orders };
+                }).ToList();
+
+                return new() { Result = new SuccessDataResult<List<VM_Order>>(orders) };
+            }
+            catch
+            {
+                return new() { Result = new ErrorDataResult<List<VM_Order>>() };
+            }
         }
     }
 }

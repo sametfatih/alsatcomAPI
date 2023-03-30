@@ -1,4 +1,6 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
 using System;
@@ -16,6 +18,7 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
     }
     public class CreateCustomerCommandResponse
     {
+        public IResult Result { get; set; }
     }
     public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommandRequest, CreateCustomerCommandResponse>
     {
@@ -32,7 +35,10 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
             await _customerWriteRepository.AddAsync(customer);
             await _customerWriteRepository.SaveAsync();
 
-            return new();
+            return new()
+            {
+                Result = new SuccessResult()
+            };
         }
     }
 }

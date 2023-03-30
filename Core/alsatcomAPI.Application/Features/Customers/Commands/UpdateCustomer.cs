@@ -1,15 +1,13 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace alsatcomAPI.Application.Features.Customers.Commands
 {
-    public class UpdateCustomerCommandRequest: IRequest<UpdateCustomerCommandResponse>
+    public class UpdateCustomerCommandRequest : IRequest<UpdateCustomerCommandResponse>
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -17,6 +15,7 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
     }
     public class UpdateCustomerCommandResponse
     {
+        public DataResult<Customer> Result { get; set; }
     }
     public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommandRequest, UpdateCustomerCommandResponse>
     {
@@ -31,13 +30,18 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
 
         public async Task<UpdateCustomerCommandResponse> Handle(UpdateCustomerCommandRequest request, CancellationToken cancellationToken)
         {
-            Customer customer = await _customerReadRepository.GetByIdAsync(request.Id);
-            customer.Name = request.Name;
-            customer.Email = request.Email;
-
-            await _customerWriteRepository.SaveAsync();
-
-            return new();
+            try
+            {
+                Customer customer = await _customerReadRepository.GetByIdAsync(request.Id);
+                customer.Name = request.Name;
+                customer.Email = request.Email;
+                await _customerWriteRepository.SaveAsync();
+                return new() { Result = new SuccessDataResult<Customer>(customer, "Müşteri başarıyla güncellendi.") };
+            }
+            catch
+            {
+                return new() { Result = new ErrorDataResult<Customer>("Müşteri listelenirken bir hata oluştu.") };
+            }
         }
     }
 }

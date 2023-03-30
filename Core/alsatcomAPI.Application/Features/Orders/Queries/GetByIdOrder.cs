@@ -1,4 +1,8 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
+using alsatcomAPI.Application.ViewModels.Orders;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
 using System;
@@ -15,30 +19,35 @@ namespace alsatcomAPI.Application.Features.Orders.Queries
     }
     public class GetByIdOrderQueryResponse
     {
-        public Guid CustomerId { get; set; }
-        public string Adress { get; set; }
-        public Customer Customer { get; set; }
-        public ICollection<Product> Products { get; set; }
+        public DataResult<VM_Order> Result { get; set; }
+        //public List<Product> Products { get; set; }
     }
     public class GetByIdOrderQueryHandler : IRequestHandler<GetByIdOrderQueryRequest, GetByIdOrderQueryResponse>
     {
         readonly IOrderReadRepository _orderReadRepository;
+        readonly IProductReadRepository _productReadRepository;
 
-        public GetByIdOrderQueryHandler(IOrderReadRepository orderReadRepository)
+        public GetByIdOrderQueryHandler(IOrderReadRepository orderReadRepository, IProductReadRepository productReadRepository)
         {
             _orderReadRepository = orderReadRepository;
+            _productReadRepository = productReadRepository;
         }
 
         public async Task<GetByIdOrderQueryResponse> Handle(GetByIdOrderQueryRequest request, CancellationToken cancellationToken)
         {
-            Order order = await _orderReadRepository.GetByIdWithInclude(request.Id,false);
-            //todo if(!result)
-            return new()
+            try
             {
-                Customer = order.Customer,
-                Products = order.Products,
-                Adress = order.Adress
-            };
+                //Order order = await _orderReadRepository.GetByIdWithInclude(request.Id,false);
+                //todo if(!result)
+                Order order = await _orderReadRepository.GetByIdAsync(request.Id);
+                VM_Order model = new() { CustomerId = order.CustomerId.ToString(), Adress = order.Adress };
+
+                return new() { Result = new SuccessDataResult<VM_Order>(model) };
+            }
+            catch
+            {
+                return new() { Result = new ErrorDataResult<VM_Order>() };
+            }
 
         }
     }

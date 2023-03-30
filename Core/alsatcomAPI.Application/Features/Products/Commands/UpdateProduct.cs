@@ -1,11 +1,9 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace alsatcomAPI.Application.Features.Products.Commands
 {
@@ -21,6 +19,7 @@ namespace alsatcomAPI.Application.Features.Products.Commands
     }
     public class UpdateProductCommandResponse
     {
+        public Result Result { get; set; }
     }
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommandRequest, UpdateProductCommandResponse>
     {
@@ -35,19 +34,26 @@ namespace alsatcomAPI.Application.Features.Products.Commands
 
         public async Task<UpdateProductCommandResponse> Handle(UpdateProductCommandRequest request, CancellationToken cancellationToken)
         {
-            Product product = await _productReadRepository.GetByIdAsync(request.Id);
-            product.Name = request.Name;
-            product.BrandName = request.BrandName;
-            product.Description = request.Description;
-            product.Stock = request.Stock;
-            product.Price = request.Price;
-            product.Description = request.Description;
-            if (request.DiscountedPrice != 0)
-                product.DiscountedPrice = request.DiscountedPrice;
+            try
+            {
+                Product product = await _productReadRepository.GetByIdAsync(request.Id);
+                product.Name = request.Name;
+                product.BrandName = request.BrandName;
+                product.Description = request.Description;
+                product.Stock = request.Stock;
+                product.Price = request.Price;
+                product.Description = request.Description;
+                if (request.DiscountedPrice != 0)
+                    product.DiscountedPrice = request.DiscountedPrice;
 
-            await _productWriteRepository.SaveAsync();
+                await _productWriteRepository.SaveAsync();
 
-            return new();
+                return new() { Result = new SuccessResult() };
+            }
+            catch
+            {
+                return new() { Result = new ErrorResult() };
+            }
         }
     }
 }

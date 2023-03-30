@@ -1,5 +1,8 @@
 ﻿using alsatcomAPI.Application.Features.Dealers.Commands;
 using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
 using System;
@@ -18,7 +21,9 @@ namespace alsatcomAPI.Application.Features.Dealers.Commands
         public string Adress { get; set; }
         public string CompanyName { get; set; }
     }
-    public class UpdateDealerCommandResponse { 
+    public class UpdateDealerCommandResponse 
+    {
+        public Result Result { get; set; }
     }
     public class UpdateDealerCommandHandler : IRequestHandler<UpdateDealerCommandRequest, UpdateDealerCommandResponse>
     {
@@ -33,15 +38,23 @@ namespace alsatcomAPI.Application.Features.Dealers.Commands
 
         public async Task<UpdateDealerCommandResponse> Handle(UpdateDealerCommandRequest request, CancellationToken cancellationToken)
         {
-            Dealer dealer = await _dealerReadRepository.GetByIdAsync(request.Id);
-            dealer.Name = request.Name;
-            dealer.Description = request.Description;
-            dealer.Adress = request.Adress;
-            dealer.CompanyName = request.CompanyName;
+            try
+            {
 
-            await _dealerWriteRepository.SaveAsync();
+                Dealer dealer = await _dealerReadRepository.GetByIdAsync(request.Id);
+                dealer.Name = request.Name;
+                dealer.Description = request.Description;
+                dealer.Adress = request.Adress;
+                dealer.CompanyName = request.CompanyName;
 
-            return new();
+                await _dealerWriteRepository.SaveAsync();
+
+                return new() { Result = new SuccessResult()};
+            }
+            catch
+            {
+                return new() { Result = new ErrorResult() };
+            }
         }
     }
 }

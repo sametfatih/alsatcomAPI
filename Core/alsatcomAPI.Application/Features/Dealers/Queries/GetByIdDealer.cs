@@ -1,4 +1,8 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
+using alsatcomAPI.Application.ViewModels.Dealers;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
 using System;
@@ -15,10 +19,7 @@ namespace alsatcomAPI.Application.Features.Dealers.Queries
     }                   
     public class GetByIdDealerQueryResponse
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string Adress { get; set; }
-        public string CompanyName { get; set; }
+        public DataResult<VM_Dealer> Result { get; set; }
     }
     public class GetByIdDealerQueryHandler : IRequestHandler<GetByIdDealerQueryRequest, GetByIdDealerQueryResponse>
     {
@@ -31,10 +32,17 @@ namespace alsatcomAPI.Application.Features.Dealers.Queries
 
         public async Task<GetByIdDealerQueryResponse> Handle(GetByIdDealerQueryRequest request, CancellationToken cancellationToken)
         {
-            Dealer dealer = await _dealerReadRepository.GetByIdAsync(request.Id, false);
-            //todo if(!result)
-            return new() { Name = dealer.Name, Adress = dealer.Adress, CompanyName = dealer.CompanyName, Description = dealer.Description };
-           
+            try
+            {
+                Dealer dealer = await _dealerReadRepository.GetByIdAsync(request.Id, false);
+                VM_Dealer model = new() { Name = dealer.Name, Adress = dealer.Adress, CompanyName = dealer.CompanyName, Description = dealer.Description };
+
+                return new() { Result = new SuccessDataResult<VM_Dealer>(model) };
+            }
+            catch
+            {
+                return new() { Result = new ErrorDataResult<VM_Dealer>() };
+            }
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace alsatcomAPI.Application.Features.Products.Commands
 {
@@ -14,6 +12,7 @@ namespace alsatcomAPI.Application.Features.Products.Commands
     }
     public class DeleteProductCommandResponse
     {
+        public Result Result { get; set; }
     }
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommandRequest, DeleteProductCommandResponse>
     {
@@ -26,10 +25,17 @@ namespace alsatcomAPI.Application.Features.Products.Commands
 
         public async Task<DeleteProductCommandResponse> Handle(DeleteProductCommandRequest request, CancellationToken cancellationToken)
         {
-            await _productWriteRepository.RemoveAsync(request.Id);
-            await _productWriteRepository.SaveAsync();
+            try
+            {
+                await _productWriteRepository.RemoveAsync(request.Id);
+                await _productWriteRepository.SaveAsync();
 
-            return new();
+                return new() { Result = new SuccessResult() };
+            }
+            catch
+            {
+                return new() { Result = new ErrorResult() };
+            }
         }
     }
 }

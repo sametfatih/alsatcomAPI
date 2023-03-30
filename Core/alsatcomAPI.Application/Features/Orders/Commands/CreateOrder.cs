@@ -1,4 +1,7 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
 using System;
@@ -18,6 +21,7 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
     }
     public class CreateOrderCommandResponse
     {
+        public Result Result { get; set; }
     }
     public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandRequest, CreateOrderCommandResponse>
     {
@@ -34,15 +38,21 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
 
         public async Task<CreateOrderCommandResponse> Handle(CreateOrderCommandRequest request, CancellationToken cancellationToken)
         {
-          
-            ICollection<Product> products = _productReadRepository.GetWhere(p => request.Products.Contains(p.Id.ToString())).ToList();        
-            Customer customer = await _customerReadRepository.GetByIdAsync(request.CustomerId);
+            try
+            {
+                ICollection<Product> products = _productReadRepository.GetWhere(p => request.Products.Contains(p.Id.ToString())).ToList();
+                Customer customer = await _customerReadRepository.GetByIdAsync(request.CustomerId);
 
-            Order order = new() { Customer = customer, Adress = request.Adress, Products = products};
-            await _orderWriteRepository.AddAsync(order);
-            await _orderWriteRepository.SaveAsync();
+                Order order = new() { Customer = customer, Adress = request.Adress, Products = products };
+                await _orderWriteRepository.AddAsync(order);
+                await _orderWriteRepository.SaveAsync();
 
-            return new();
+                return new() { Result = new SuccessResult() };
+            }
+            catch
+            {
+                return new() { Result = new ErrorResult() };
+            }
         }
     }
 }

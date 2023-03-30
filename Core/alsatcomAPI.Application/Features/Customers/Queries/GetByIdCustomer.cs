@@ -1,4 +1,8 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
+using alsatcomAPI.Application.ViewModels.Customers;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
 using System;
@@ -15,8 +19,7 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
     }
     public class GetByIdCustomerQueryResponse
     {
-        public string Name { get; set; }
-        public string Email { get; set; }
+        public DataResult<VM_Customer> Result { get; set; }
     }
     public class GetByIdCustomerQueryHandler : IRequestHandler<GetByIdCustomerQueryRequest, GetByIdCustomerQueryResponse>
     {
@@ -29,9 +32,17 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
 
         public async Task<GetByIdCustomerQueryResponse> Handle(GetByIdCustomerQueryRequest request, CancellationToken cancellationToken)
         {
-            Customer customer = await _customerReadRepository.GetByIdAsync(request.Id, false);
-            //todo if(!result)
-            return new() { Name = customer.Name, Email = customer.Email };
+            try
+            {
+                Customer customer = await _customerReadRepository.GetByIdAsync(request.Id, false);
+                VM_Customer model = new() { Name = customer.Name, Email = customer.Email };
+
+                return new() { Result = new SuccessDataResult<VM_Customer>(model) };
+            }
+            catch
+            {
+                return new() { Result = new ErrorDataResult<VM_Customer>() };
+            }
         }
     }
 }

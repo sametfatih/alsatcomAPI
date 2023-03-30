@@ -1,11 +1,9 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace alsatcomAPI.Application.Features.Products.Commands
 {
@@ -20,6 +18,7 @@ namespace alsatcomAPI.Application.Features.Products.Commands
     }
     public class CreateProductCommandResponse
     {
+        public Result Result { get; set; }
     }
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommandRequest, CreateProductCommandResponse>
     {
@@ -34,26 +33,28 @@ namespace alsatcomAPI.Application.Features.Products.Commands
 
         public async Task<CreateProductCommandResponse> Handle(CreateProductCommandRequest request, CancellationToken cancellationToken)
         {
-            if (request != null)
+            try
             {
                 Dealer dealer = await _dealerReadRepository.GetByIdAsync(request.DealerId);
 
-                if (dealer != null)
+                Product product = new()
                 {
-                    Product product = new()
-                    {
-                        Dealer = dealer,
-                        Name = request.Name,
-                        BrandName = request.BrandName,
-                        Description = request.Description,
-                        Stock = request.Stock,
-                        Price = request.Price
-                    };
-                    await _productWriteRepository.AddAsync(product);
-                    await _productWriteRepository.SaveAsync();
-                }
+                    Dealer = dealer,
+                    Name = request.Name,
+                    BrandName = request.BrandName,
+                    Description = request.Description,
+                    Stock = request.Stock,
+                    Price = request.Price
+                };
+                await _productWriteRepository.AddAsync(product);
+                await _productWriteRepository.SaveAsync();
+
+                return new() { Result = new SuccessResult() };
             }
-            return new();
+            catch
+            {
+                return new() { Result = new ErrorResult() };
+            }
         }
     }
 }

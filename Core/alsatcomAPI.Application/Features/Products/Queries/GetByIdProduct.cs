@@ -1,11 +1,10 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
+using alsatcomAPI.Application.ViewModels.Products;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace alsatcomAPI.Application.Features.Products.Queries
 {
@@ -15,14 +14,7 @@ namespace alsatcomAPI.Application.Features.Products.Queries
     }
     public class GetByIdProductQueryResponse
     {
-        public string Name { get; set; }
-        public string BrandName { get; set; }
-        public float Stock { get; set; }
-        public float Price { get; set; }
-        public float DiscountedPrice { get; set; }
-        public string Description { get; set; }
-        public Dealer Dealer { get; set; }
-        public ICollection<Order> Orders { get; set; }
+        public DataResult<VM_Product> Result { get; set; }
     }
     public class GetByIdProductQueryHandler : IRequestHandler<GetByIdProductQueryRequest, GetByIdProductQueryResponse>
     {
@@ -35,20 +27,25 @@ namespace alsatcomAPI.Application.Features.Products.Queries
 
         public async Task<GetByIdProductQueryResponse> Handle(GetByIdProductQueryRequest request, CancellationToken cancellationToken)
         {
-            Product product = await _productReadRepository.GetByIdAsync(request.Id,false);
-            //todo if(!result)
-            return new()
+            try
             {
-                Name = product.Name,
-                BrandName = product.BrandName,
-                Stock = product.Stock,
-                Price = product.Price,
-                Description = product.Description,
-                DiscountedPrice = product.DiscountedPrice,
-                Dealer = product.Dealer,
-                Orders = product.Orders
-            };
-
+                Product product = await _productReadRepository.GetByIdAsync(request.Id, false);
+                VM_Product model = new()
+                {
+                    Name = product.Name,
+                    BrandName = product.BrandName,
+                    Stock = product.Stock,
+                    Price = product.Price,
+                    Description = product.Description,
+                    DiscountedPrice = product.DiscountedPrice,
+                };
+                //todo if(!result)
+                return new() { Result = new SuccessDataResult<VM_Product>(model) };
+            }
+            catch
+            {
+                return new() { Result = new ErrorDataResult<VM_Product>() };
+            }
         }
     }
 }

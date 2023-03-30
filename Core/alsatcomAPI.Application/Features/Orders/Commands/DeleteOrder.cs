@@ -1,4 +1,7 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -14,6 +17,7 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
     }
     public class DeleteOrderCommandResponse
     {
+        public Result Result { get; set; }
     }
     public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommandRequest, DeleteOrderCommandResponse>
     {
@@ -26,10 +30,17 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
 
         public async Task<DeleteOrderCommandResponse> Handle(DeleteOrderCommandRequest request, CancellationToken cancellationToken)
         {
-            await _orderWriteRepository.RemoveAsync(request.Id);
-            await _orderWriteRepository.SaveAsync();
+            try
+            {
+                await _orderWriteRepository.RemoveAsync(request.Id);
+                await _orderWriteRepository.SaveAsync();
 
-            return new();
+                return new() { Result = new SuccessResult()};
+            }
+            catch
+            {
+                return new() { Result = new ErrorResult() };
+            }
         }
     }
 }

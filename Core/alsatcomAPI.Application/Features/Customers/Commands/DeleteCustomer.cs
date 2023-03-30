@@ -1,4 +1,7 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -14,6 +17,7 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
     }
     public class DeleteCustomerCommandResponse
     {
+        public IResult Result { get; set; }
     }
     public class DeleteCustomerCommandHandler : IRequestHandler<DeleteCustomerCommandRequest, DeleteCustomerCommandResponse>
     {
@@ -27,10 +31,16 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
 
         public async Task<DeleteCustomerCommandResponse> Handle(DeleteCustomerCommandRequest request, CancellationToken cancellationToken)
         {
-            await _customerWriteRepository.RemoveAsync(request.Id);
-            await _customerWriteRepository.SaveAsync();
-
-            return new();
+            try
+            {
+                await _customerWriteRepository.RemoveAsync(request.Id);
+                await _customerWriteRepository.SaveAsync();
+                return new() { Result = new SuccessResult() };
+            }
+            catch
+            {
+                return new() { Result = new ErrorResult() };
+            }
         }
     }
 }

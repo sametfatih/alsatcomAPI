@@ -1,7 +1,6 @@
 ﻿using alsatcomAPI.Application.Features.Products.Commands;
 using alsatcomAPI.Application.Features.Products.Queries;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace alsatcomAPI.API.Controllers
@@ -21,6 +20,8 @@ namespace alsatcomAPI.API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] GetAllProductQueryRequest getAllProductQueryRequest)
         {
             GetAllProductQueryResponse response = await mediator.Send(getAllProductQueryRequest);
+            if (!response.Result.Success)
+                return BadRequest(response);
             return Ok(response);
         }
 
@@ -28,6 +29,8 @@ namespace alsatcomAPI.API.Controllers
         public async Task<IActionResult> GetById([FromQuery] GetByIdProductQueryRequest getByIdProductQueryRequest)
         {
             GetByIdProductQueryResponse response = await mediator.Send(getByIdProductQueryRequest);
+            if (!response.Result.Success)
+                return BadRequest(response);
             return Ok(response);
         }
 
@@ -35,15 +38,17 @@ namespace alsatcomAPI.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateProductCommandRequest createProductCommandRequest)
         {
             CreateProductCommandResponse response = await mediator.Send(createProductCommandRequest);
-
-            return Ok(response);
+            if (!response.Result.Success)
+                return BadRequest(response);
+            return Ok(response); ;
         }
 
         [HttpPut("[action]")]
         public async Task<IActionResult> Update([FromBody] UpdateProductCommandRequest updateProductCommandRequest)
         {
             UpdateProductCommandResponse response = await mediator.Send(updateProductCommandRequest);
-
+            if (!response.Result.Success)
+                return BadRequest(response);
             return Ok(response);
         }
 
@@ -51,6 +56,8 @@ namespace alsatcomAPI.API.Controllers
         public async Task<IActionResult> Delete([FromRoute] DeleteProductCommandRequest deleteProductCommandRequest)
         {
             DeleteProductCommandResponse response = await mediator.Send(deleteProductCommandRequest);
+            if (!response.Result.Success)
+                return BadRequest(response);
             return Ok(response);
         }
     }

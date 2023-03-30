@@ -1,4 +1,7 @@
 ﻿using alsatcomAPI.Application.Repositories;
+using alsatcomAPI.Application.Utilities.Results;
+using alsatcomAPI.Application.Utilities.Results.ErrorResults;
+using alsatcomAPI.Application.Utilities.Results.SuccessResults;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
 using System;
@@ -17,6 +20,7 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
     }
     public class UpdateOrderCommandResponse
     {
+        public Result Result { get; set; }
     }
     public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommandRequest, UpdateOrderCommandResponse>
     {
@@ -31,14 +35,21 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
 
         public async Task<UpdateOrderCommandResponse> Handle(UpdateOrderCommandRequest request, CancellationToken cancellationToken)
         {
-            Order order = await _orderReadRepository.GetByIdAsync(request.Id);
-            order.Adress = request.Adress;
-            if(request.Products != null)
-                order.Products = request.Products;
+            try
+            {
+                Order order = await _orderReadRepository.GetByIdAsync(request.Id);
+                order.Adress = request.Adress;
+                if (request.Products != null)
+                    order.Products = request.Products;
 
-            await _orderWriteRepository.SaveAsync();
+                await _orderWriteRepository.SaveAsync();
 
-            return new();
+                return new() { Result = new SuccessResult() };
+            }
+            catch
+            {
+                return new() { Result = new ErrorResult() };
+            }
         }
     }
 }
