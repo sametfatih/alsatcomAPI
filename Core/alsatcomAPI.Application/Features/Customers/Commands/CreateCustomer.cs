@@ -19,7 +19,7 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
     }
     public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommandRequest, CreateCustomerCommandResponse>
     {
-        ICustomerWriteRepository _customerWriteRepository;
+        readonly ICustomerWriteRepository _customerWriteRepository;
 
         public CreateCustomerCommandHandler(ICustomerWriteRepository customerWriteRepository)
         {

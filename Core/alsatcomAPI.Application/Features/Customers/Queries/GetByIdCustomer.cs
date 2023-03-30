@@ -20,7 +20,7 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
     }
     public class GetByIdCustomerQueryHandler : IRequestHandler<GetByIdCustomerQueryRequest, GetByIdCustomerQueryResponse>
     {
-        ICustomerReadRepository _customerReadRepository;
+        readonly ICustomerReadRepository _customerReadRepository;
 
         public GetByIdCustomerQueryHandler(ICustomerReadRepository customerReadRepository)
         {
@@ -29,8 +29,8 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
 
         public async Task<GetByIdCustomerQueryResponse> Handle(GetByIdCustomerQueryRequest request, CancellationToken cancellationToken)
         {
-            Customer customer = await _customerReadRepository.GetByIdAsync(request.Id);
-
+            Customer customer = await _customerReadRepository.GetByIdAsync(request.Id, false);
+            //todo if(!result)
             return new() { Name = customer.Name, Email = customer.Email };
         }
     }

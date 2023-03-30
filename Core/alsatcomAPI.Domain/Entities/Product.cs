@@ -11,9 +11,10 @@ namespace alsatcomAPI.Domain.Entities
     {
         public Guid DealerId { get; set; }
         public string Name { get; set; }
-        public string Stock { get; set; }
-        public string Price { get; set; }
-        public string DiscountedPrice { get; set; }
+        public string BrandName { get; set; }
+        public int Stock { get; set; }
+        public float Price { get; set; }
+        public float DiscountedPrice { get; set; }
         public string Description { get; set; }
         public Dealer Dealer { get; set; }
         public ICollection<Order> Orders { get; set; }

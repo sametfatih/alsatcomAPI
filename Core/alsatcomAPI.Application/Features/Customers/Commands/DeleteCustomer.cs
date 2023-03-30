@@ -18,7 +18,7 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
     public class DeleteCustomerCommandHandler : IRequestHandler<DeleteCustomerCommandRequest, DeleteCustomerCommandResponse>
     {
         
-        ICustomerWriteRepository _customerWriteRepository;
+        readonly ICustomerWriteRepository _customerWriteRepository;
 
         public DeleteCustomerCommandHandler(ICustomerWriteRepository customerWriteRepository)
         {

@@ -1,8 +1,6 @@
 ﻿using alsatcomAPI.Application.Features.Customers.Commands;
 using alsatcomAPI.Application.Features.Customers.Queries;
-using alsatcomAPI.Application.Repositories;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace alsatcomAPI.API.Controllers
@@ -11,13 +9,12 @@ namespace alsatcomAPI.API.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        IMediator mediator;
+        readonly IMediator mediator;
 
         public CustomerController(IMediator mediator)
         {
             this.mediator = mediator;
         }
-
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAll([FromQuery] GetAllCustomerQueryRequest getAllCustomerQueryRequest)
@@ -25,6 +22,7 @@ namespace alsatcomAPI.API.Controllers
             GetAllCustomerQueryResponse response = await mediator.Send(getAllCustomerQueryRequest);
             return Ok(response);
         }
+
         [HttpGet("[action]")]
         public async Task<IActionResult> GetById([FromQuery] GetByIdCustomerQueryRequest getByIdCustomerQueryRequest)
         {
@@ -38,12 +36,14 @@ namespace alsatcomAPI.API.Controllers
             CreateCustomerCommandResponse response = await mediator.Send(createCustomerCommandRequest);
             return Ok();
         }
+
         [HttpPut("[action]")]
         public async Task<IActionResult> Update([FromBody] UpdateCustomerCommandRequest updateCustomerCommandRequest)
         {
             UpdateCustomerCommandResponse response = await mediator.Send(updateCustomerCommandRequest);
             return Ok();
         }
+
         [HttpDelete("[action]/{Id}")]
         public async Task<IActionResult> Delete([FromRoute] DeleteCustomerCommandRequest deleteCustomerCommandRequest)
         {

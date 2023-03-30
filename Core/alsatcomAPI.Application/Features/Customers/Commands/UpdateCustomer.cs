@@ -20,8 +20,8 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
     }
     public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommandRequest, UpdateCustomerCommandResponse>
     {
-        ICustomerReadRepository _customerReadRepository;
-        ICustomerWriteRepository _customerWriteRepository;
+        readonly ICustomerReadRepository _customerReadRepository;
+        readonly ICustomerWriteRepository _customerWriteRepository;
 
         public UpdateCustomerCommandHandler(ICustomerReadRepository customerReadRepository, ICustomerWriteRepository customerWriteRepository)
         {

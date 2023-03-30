@@ -1,12 +1,6 @@
 ﻿using alsatcomAPI.Application.Repositories;
 using alsatcomAPI.Domain.Entities;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace alsatcomAPI.Application.Features.Customers.Queries
 {
@@ -19,7 +13,7 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
     }
     public class GetAllCustomerQueryHandler : IRequestHandler<GetAllCustomerQueryRequest, GetAllCustomerQueryResponse>
     {
-        ICustomerReadRepository _customerReadRepository;
+        readonly ICustomerReadRepository _customerReadRepository;
 
         public GetAllCustomerQueryHandler(ICustomerReadRepository customerReadRepository)
         {
@@ -28,7 +22,7 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
 
         public async Task<GetAllCustomerQueryResponse> Handle(GetAllCustomerQueryRequest request, CancellationToken cancellationToken)
         {
-            List<Customer> customers = await _customerReadRepository.GetAll(false).ToListAsync();
+            List<Customer> customers = _customerReadRepository.GetAll(false).ToList();
 
             return new() { Customers = customers };
         }
