@@ -17,9 +17,15 @@ namespace alsatcomAPI.Application.Features.Products.Commands
         public float DiscountedPrice { get; set; }
         public string Description { get; set; }
     }
-    public class UpdateProductCommandResponse
+    public class UpdateProductCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public UpdateProductCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public UpdateProductCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommandRequest, UpdateProductCommandResponse>
     {
@@ -48,11 +54,11 @@ namespace alsatcomAPI.Application.Features.Products.Commands
 
                 await _productWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult() };
+                return new UpdateProductCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new UpdateProductCommandResponse(false);
             }
         }
     }

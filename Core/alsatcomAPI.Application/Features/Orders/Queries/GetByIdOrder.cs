@@ -17,10 +17,19 @@ namespace alsatcomAPI.Application.Features.Orders.Queries
     {
         public string Id { get; set; }
     }
-    public class GetByIdOrderQueryResponse
+    public class GetByIdOrderQueryResponse : DataResult<VM_Order>
     {
-        public DataResult<VM_Order> Result { get; set; }
-        //public List<Product> Products { get; set; }
+        public GetByIdOrderQueryResponse(VM_Order data, bool success) : base(data, success)
+        {
+        }
+
+        public GetByIdOrderQueryResponse(bool success, string message) : base(success, message)
+        {
+        }
+
+        public GetByIdOrderQueryResponse(VM_Order data, bool success, string message) : base(data, success, message)
+        {
+        }
     }
     public class GetByIdOrderQueryHandler : IRequestHandler<GetByIdOrderQueryRequest, GetByIdOrderQueryResponse>
     {
@@ -42,11 +51,11 @@ namespace alsatcomAPI.Application.Features.Orders.Queries
                 Order order = await _orderReadRepository.GetByIdAsync(request.Id);
                 VM_Order model = new() { CustomerId = order.CustomerId.ToString(), Adress = order.Adress };
 
-                return new() { Result = new SuccessDataResult<VM_Order>(model) };
+                return new GetByIdOrderQueryResponse(model, true, "Succesfull.");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<VM_Order>() };
+                return new GetByIdOrderQueryResponse(false, "Error occured.");
             }
 
         }

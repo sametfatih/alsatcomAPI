@@ -16,9 +16,15 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
         public string Name { get; set; }
         public string Email { get; set; }
     }
-    public class CreateCustomerCommandResponse
+    public class CreateCustomerCommandResponse : Result
     {
-        public IResult Result { get; set; }
+        public CreateCustomerCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public CreateCustomerCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommandRequest, CreateCustomerCommandResponse>
     {
@@ -35,10 +41,7 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
             await _customerWriteRepository.AddAsync(customer);
             await _customerWriteRepository.SaveAsync();
 
-            return new()
-            {
-                Result = new SuccessResult()
-            };
+            return new CreateCustomerCommandResponse(true, "Successful");
         }
     }
 }

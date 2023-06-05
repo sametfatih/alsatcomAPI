@@ -17,9 +17,19 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
     {
         public string Id { get; set; }
     }
-    public class GetByIdCustomerQueryResponse
+    public class GetByIdCustomerQueryResponse : DataResult<VM_Customer>
     {
-        public DataResult<VM_Customer> Result { get; set; }
+        public GetByIdCustomerQueryResponse(VM_Customer data, bool success) : base(data, success)
+        {
+        }
+
+        public GetByIdCustomerQueryResponse(bool success, string message) : base(success, message)
+        {
+        }
+
+        public GetByIdCustomerQueryResponse(VM_Customer data, bool success, string message) : base(data, success, message)
+        {
+        }
     }
     public class GetByIdCustomerQueryHandler : IRequestHandler<GetByIdCustomerQueryRequest, GetByIdCustomerQueryResponse>
     {
@@ -37,11 +47,11 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
                 Customer customer = await _customerReadRepository.GetByIdAsync(request.Id, false);
                 VM_Customer model = new() { Name = customer.Name, Email = customer.Email };
 
-                return new() { Result = new SuccessDataResult<VM_Customer>(model) };
+                return new GetByIdCustomerQueryResponse(model, true, "Successful.");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<VM_Customer>() };
+                return new GetByIdCustomerQueryResponse(false, "Error occured.");
             }
         }
     }

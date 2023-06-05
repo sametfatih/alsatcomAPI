@@ -16,10 +16,20 @@ namespace alsatcomAPI.Application.Features.Dealers.Queries
     public class GetByIdDealerQueryRequest : IRequest<GetByIdDealerQueryResponse>
     {
         public  string Id { get; set; }
-    }                   
-    public class GetByIdDealerQueryResponse
+    }
+    public class GetByIdDealerQueryResponse : DataResult<VM_Dealer>
     {
-        public DataResult<VM_Dealer> Result { get; set; }
+        public GetByIdDealerQueryResponse(VM_Dealer data, bool success) : base(data, success)
+        {
+        }
+
+        public GetByIdDealerQueryResponse(bool success, string message) : base(success, message)
+        {
+        }
+
+        public GetByIdDealerQueryResponse(VM_Dealer data, bool success, string message) : base(data, success, message)
+        {
+        }
     }
     public class GetByIdDealerQueryHandler : IRequestHandler<GetByIdDealerQueryRequest, GetByIdDealerQueryResponse>
     {
@@ -37,11 +47,11 @@ namespace alsatcomAPI.Application.Features.Dealers.Queries
                 Dealer dealer = await _dealerReadRepository.GetByIdAsync(request.Id, false);
                 VM_Dealer model = new() { Name = dealer.Name, Adress = dealer.Adress, CompanyName = dealer.CompanyName, Description = dealer.Description };
 
-                return new() { Result = new SuccessDataResult<VM_Dealer>(model) };
+                return new GetByIdDealerQueryResponse(model, true, "Successful.");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<VM_Dealer>() };
+                return new GetByIdDealerQueryResponse(false, "Error occured.");
             }
         }
     }

@@ -15,9 +15,15 @@ namespace alsatcomAPI.Application.Features.Dealers.Commands
     {
         public string Id { get; set; }
     }
-    public class DeleteDealerCommandResponse
+    public class DeleteDealerCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public DeleteDealerCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public DeleteDealerCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class DeleteDealerCommandHandler : IRequestHandler<DeleteDealerCommandRequest, DeleteDealerCommandResponse>
     {
@@ -35,11 +41,11 @@ namespace alsatcomAPI.Application.Features.Dealers.Commands
                 await _dealerWriteRepository.RemoveAsync(request.Id);
                 await _dealerWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult()};
+                return new DeleteDealerCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new DeleteDealerCommandResponse(false);
             }
         }
     }

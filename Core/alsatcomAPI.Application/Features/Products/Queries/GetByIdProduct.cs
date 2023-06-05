@@ -12,9 +12,19 @@ namespace alsatcomAPI.Application.Features.Products.Queries
     {
         public string Id { get; set; }
     }
-    public class GetByIdProductQueryResponse
+    public class GetByIdProductQueryResponse : DataResult<VM_Product>
     {
-        public DataResult<VM_Product> Result { get; set; }
+        public GetByIdProductQueryResponse(VM_Product data, bool success) : base(data, success)
+        {
+        }
+
+        public GetByIdProductQueryResponse(bool success, string message) : base(success, message)
+        {
+        }
+
+        public GetByIdProductQueryResponse(VM_Product data, bool success, string message) : base(data, success, message)
+        {
+        }
     }
     public class GetByIdProductQueryHandler : IRequestHandler<GetByIdProductQueryRequest, GetByIdProductQueryResponse>
     {
@@ -40,11 +50,11 @@ namespace alsatcomAPI.Application.Features.Products.Queries
                     DiscountedPrice = product.DiscountedPrice,
                 };
                 //todo if(!result)
-                return new() { Result = new SuccessDataResult<VM_Product>(model) };
+                return new GetByIdProductQueryResponse(model, true, "Successful.");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<VM_Product>() };
+                return new GetByIdProductQueryResponse(false, "Error occured.");
             }
         }
     }

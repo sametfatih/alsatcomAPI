@@ -16,9 +16,15 @@ namespace alsatcomAPI.Application.Features.Products.Commands
         public float Price { get; set; }
         public string Description { get; set; }
     }
-    public class CreateProductCommandResponse
+    public class CreateProductCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public CreateProductCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public CreateProductCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class CreateProductCommandHandler : IRequestHandler<CreateProductCommandRequest, CreateProductCommandResponse>
     {
@@ -49,11 +55,11 @@ namespace alsatcomAPI.Application.Features.Products.Commands
                 await _productWriteRepository.AddAsync(product);
                 await _productWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult() };
+                return new CreateProductCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new CreateProductCommandResponse(false);
             }
         }
     }

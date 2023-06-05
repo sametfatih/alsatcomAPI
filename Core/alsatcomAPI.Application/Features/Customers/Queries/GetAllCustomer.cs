@@ -11,9 +11,21 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
     public class GetAllCustomerQueryRequest : IRequest<GetAllCustomerQueryResponse>
     {
     }
-    public class GetAllCustomerQueryResponse
+    public class GetAllCustomerQueryResponse :  DataResult<List<VM_Customer>>
     {
-        public DataResult<List<VM_Customer>> Result { get; set; }
+        public GetAllCustomerQueryResponse(List<VM_Customer> data, bool success) : base(data, success)
+        {
+        }
+
+        public GetAllCustomerQueryResponse(bool success, string message) : base(success, message)
+        {
+        }
+
+        public GetAllCustomerQueryResponse(List<VM_Customer> data, bool success, string message) : base(data,success,message)
+        {
+        }
+
+
     }
     public class GetAllCustomerQueryHandler : IRequestHandler<GetAllCustomerQueryRequest, GetAllCustomerQueryResponse>
     {
@@ -33,11 +45,11 @@ namespace alsatcomAPI.Application.Features.Customers.Queries
                     Name = c.Name,
                     Email = c.Email
                 }).ToList();
-                return new() {Result = new SuccessDataResult<List<VM_Customer>>(customers)};
+                return new GetAllCustomerQueryResponse(customers,true,"Successful.");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<List<VM_Customer>>() };
+                return new GetAllCustomerQueryResponse(false, "Error occured.");
             }
         }
     }

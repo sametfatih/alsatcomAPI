@@ -15,9 +15,15 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
     {
         public string Id { get; set; }
     }
-    public class DeleteOrderCommandResponse
+    public class DeleteOrderCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public DeleteOrderCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public DeleteOrderCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommandRequest, DeleteOrderCommandResponse>
     {
@@ -35,11 +41,11 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
                 await _orderWriteRepository.RemoveAsync(request.Id);
                 await _orderWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult()};
+                return new DeleteOrderCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new DeleteOrderCommandResponse(false);
             }
         }
     }

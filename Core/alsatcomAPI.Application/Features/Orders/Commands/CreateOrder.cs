@@ -19,9 +19,15 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
         public string Adress { get; set; }       
         public List<string> Products { get; set; }
     }
-    public class CreateOrderCommandResponse
+    public class CreateOrderCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public CreateOrderCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public CreateOrderCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommandRequest, CreateOrderCommandResponse>
     {
@@ -47,11 +53,11 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
                 await _orderWriteRepository.AddAsync(order);
                 await _orderWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult() };
+                return new CreateOrderCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new CreateOrderCommandResponse(false);
             }
         }
     }

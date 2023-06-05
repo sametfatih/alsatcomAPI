@@ -19,9 +19,15 @@ namespace alsatcomAPI.Application.Features.Dealers.Commands
         public string Adress { get; set; }
         public string CompanyName { get; set; }
     }
-    public class CreateDealerCommandResponse
+    public class CreateDealerCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public CreateDealerCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public CreateDealerCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class CreateDealerCommandHandler : IRequestHandler<CreateDealerCommandRequest, CreateDealerCommandResponse>
     {
@@ -40,11 +46,11 @@ namespace alsatcomAPI.Application.Features.Dealers.Commands
                 await _dealerWriteRepository.AddAsync(dealer);
                 await _dealerWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult() };
+                return new CreateDealerCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new CreateDealerCommandResponse(false);
             }
         }
     }

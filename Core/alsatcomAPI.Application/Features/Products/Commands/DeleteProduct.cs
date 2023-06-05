@@ -10,9 +10,15 @@ namespace alsatcomAPI.Application.Features.Products.Commands
     {
         public string Id { get; set; }
     }
-    public class DeleteProductCommandResponse
+    public class DeleteProductCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public DeleteProductCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public DeleteProductCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommandRequest, DeleteProductCommandResponse>
     {
@@ -30,11 +36,11 @@ namespace alsatcomAPI.Application.Features.Products.Commands
                 await _productWriteRepository.RemoveAsync(request.Id);
                 await _productWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult() };
+                return new DeleteProductCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new DeleteProductCommandResponse(false);
             }
         }
     }

@@ -18,9 +18,15 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
         public string Adress { get; set; }
         public ICollection<Product>? Products { get; set; }
     }
-    public class UpdateOrderCommandResponse
+    public class UpdateOrderCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public UpdateOrderCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public UpdateOrderCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommandRequest, UpdateOrderCommandResponse>
     {
@@ -44,11 +50,11 @@ namespace alsatcomAPI.Application.Features.Orders.Commands
 
                 await _orderWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult() };
+                return new UpdateOrderCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new UpdateOrderCommandResponse(false);
             }
         }
     }

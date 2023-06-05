@@ -21,9 +21,15 @@ namespace alsatcomAPI.Application.Features.Dealers.Commands
         public string Adress { get; set; }
         public string CompanyName { get; set; }
     }
-    public class UpdateDealerCommandResponse 
+    public class UpdateDealerCommandResponse : Result
     {
-        public Result Result { get; set; }
+        public UpdateDealerCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public UpdateDealerCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class UpdateDealerCommandHandler : IRequestHandler<UpdateDealerCommandRequest, UpdateDealerCommandResponse>
     {
@@ -49,11 +55,11 @@ namespace alsatcomAPI.Application.Features.Dealers.Commands
 
                 await _dealerWriteRepository.SaveAsync();
 
-                return new() { Result = new SuccessResult()};
+                return new UpdateDealerCommandResponse(true);
             }
             catch
             {
-                return new() { Result = new ErrorResult() };
+                return new UpdateDealerCommandResponse(false);
             }
         }
     }

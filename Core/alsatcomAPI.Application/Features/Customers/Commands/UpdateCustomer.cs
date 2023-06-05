@@ -13,9 +13,15 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
         public string Name { get; set; }
         public string Email { get; set; }
     }
-    public class UpdateCustomerCommandResponse
+    public class UpdateCustomerCommandResponse : Result
     {
-        public DataResult<Customer> Result { get; set; }
+        public UpdateCustomerCommandResponse(bool success) : base(success)
+        {
+        }
+
+        public UpdateCustomerCommandResponse(bool success, string message) : base(success, message)
+        {
+        }
     }
     public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommandRequest, UpdateCustomerCommandResponse>
     {
@@ -36,11 +42,11 @@ namespace alsatcomAPI.Application.Features.Customers.Commands
                 customer.Name = request.Name;
                 customer.Email = request.Email;
                 await _customerWriteRepository.SaveAsync();
-                return new() { Result = new SuccessDataResult<Customer>(customer, "Müşteri başarıyla güncellendi.") };
+                return new UpdateCustomerCommandResponse(true, "Müşteri başarıyla güncellendi.");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<Customer>("Müşteri listelenirken bir hata oluştu.") };
+                return new UpdateCustomerCommandResponse(false,"Müşteri listelenirken bir hata oluştu.");
             }
         }
     }

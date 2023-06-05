@@ -10,9 +10,19 @@ namespace alsatcomAPI.Application.Features.Products.Queries
     public class GetAllProductQueryRequest : IRequest<GetAllProductQueryResponse>
     {
     }
-    public class GetAllProductQueryResponse
+    public class GetAllProductQueryResponse : DataResult<List<VM_Product>>
     {
-        public DataResult<List<VM_Product>> Result { get; set; }
+        public GetAllProductQueryResponse(List<VM_Product> data, bool success) : base(data, success)
+        {
+        }
+
+        public GetAllProductQueryResponse(bool success, string message) : base(success, message)
+        {
+        }
+
+        public GetAllProductQueryResponse(List<VM_Product> data, bool success, string message) : base(data, success, message)
+        {
+        }
     }
     public class GetAllProductQueryHandler : IRequestHandler<GetAllProductQueryRequest, GetAllProductQueryResponse>
     {
@@ -37,11 +47,11 @@ namespace alsatcomAPI.Application.Features.Products.Queries
                     Stock = p.Stock
                 }).ToList();
 
-                return new() { Result = new SuccessDataResult<List<VM_Product>>(products) };
+                return new GetAllProductQueryResponse(products, true, "Successful.");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<List<VM_Product>>() };
+                return new GetAllProductQueryResponse(false, "Error occured.");
             }
         }
     }

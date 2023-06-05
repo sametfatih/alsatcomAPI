@@ -16,9 +16,19 @@ namespace alsatcomAPI.Application.Features.Orders.Queries
     public class GetAllOrderQueryRequest : IRequest<GetAllOrderQueryResponse>
     {
     }
-    public class GetAllOrderQueryResponse
+    public class GetAllOrderQueryResponse : DataResult<List<VM_Order>>
     {
-        public DataResult<List<VM_Order>> Result { get; set; }
+        public GetAllOrderQueryResponse(List<VM_Order> data, bool success) : base(data, success)
+        {
+        }
+
+        public GetAllOrderQueryResponse(bool success, string message) : base(success, message)
+        {
+        }
+
+        public GetAllOrderQueryResponse(List<VM_Order> data, bool success, string message) : base(data, success, message)
+        {
+        }
     }
     public class GetAllOrderQueryHandler : IRequestHandler<GetAllOrderQueryRequest, GetAllOrderQueryResponse>
     {
@@ -40,11 +50,11 @@ namespace alsatcomAPI.Application.Features.Orders.Queries
 
                 }).ToList();
 
-                return new() { Result = new SuccessDataResult<List<VM_Order>>(orders) };
+                return new GetAllOrderQueryResponse(orders, true,"Successful.");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<List<VM_Order>>() };
+                return new GetAllOrderQueryResponse(false, "Error occured.");
             }
         }
     }

@@ -11,9 +11,19 @@ namespace alsatcomAPI.Application.Features.Dealers.Queries
     public class GetAllDealerQueryRequest : IRequest<GetAllDealerQueryResponse>
     {
     }
-    public class GetAllDealerQueryResponse
+    public class GetAllDealerQueryResponse : DataResult<List<VM_Dealer>>
     {
-        public DataResult<List<VM_Dealer>> Result { get; set; }
+        public GetAllDealerQueryResponse(List<VM_Dealer> data, bool success) : base(data, success)
+        {
+        }
+
+        public GetAllDealerQueryResponse(bool success, string message) : base(success, message)
+        {
+        }
+
+        public GetAllDealerQueryResponse(List<VM_Dealer> data, bool success, string message) : base(data, success, message)
+        {
+        }
     }
     public class GetAllDealerQueryHandler : IRequestHandler<GetAllDealerQueryRequest, GetAllDealerQueryResponse>
     {
@@ -36,11 +46,11 @@ namespace alsatcomAPI.Application.Features.Dealers.Queries
                     Description = d.Description
                 }).ToList();
 
-                return new() { Result = new SuccessDataResult<List<VM_Dealer>>(dealers) };
+                return new GetAllDealerQueryResponse(dealers, true , "Successful");
             }
             catch
             {
-                return new() { Result = new ErrorDataResult<List<VM_Dealer>>() };
+                return new GetAllDealerQueryResponse(false, "Error occured.");
             }
         }
     }
