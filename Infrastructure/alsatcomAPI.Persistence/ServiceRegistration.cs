@@ -2,6 +2,7 @@
 using alsatcomAPI.Domain.Entities.Identity;
 using alsatcomAPI.Persistence.Contexts;
 using alsatcomAPI.Persistence.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -17,14 +18,15 @@ namespace alsatcomAPI.Persistence
         public static void AddPersistenceServices(this IServiceCollection services)
         {
             services.AddDbContext<AlsatcomDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString));
-            services.AddIdentity<AppUser, AppRole>(options =>
+            services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 3;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
-            }).AddEntityFrameworkStores<AlsatcomDbContext>();
+                options.User.RequireUniqueEmail = true;
+            }).AddRoleManager<RoleManager<IdentityRole>>().AddEntityFrameworkStores<AlsatcomDbContext>().AddDefaultTokenProviders();
 
             services.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
             services.AddScoped<ICustomerWriteRepository, CustomerWriteRepository>();

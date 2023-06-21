@@ -1,6 +1,7 @@
 ﻿using alsatcomAPI.Domain.Entities.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,29 +27,50 @@ namespace alsatcomAPI.Application.Features.AppUsers.Commands
     public class CreateAppUserCommandHandler : IRequestHandler<CreateAppUserCommandRequest, CreateAppUserCommandResponse>
     {
         readonly UserManager<AppUser> _userManager;
+        readonly RoleManager<IdentityRole> _roleManager;
 
-        public CreateAppUserCommandHandler(UserManager<AppUser> userManager)
+        public CreateAppUserCommandHandler(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<CreateAppUserCommandResponse> Handle(CreateAppUserCommandRequest request, CancellationToken cancellationToken)
         {
-            IdentityResult result = await _userManager.CreateAsync(new()
+            AppUser user = new()
             {
                 Id = Guid.NewGuid().ToString(),
                 NameSurname = request.NameSurname,
                 UserName = request.Username,
                 Email = request.Email,
-            }, request.Password);
+            };
+
+            IdentityResult result = await _userManager.CreateAsync(user, request.Password);
 
             CreateAppUserCommandResponse response = new() { Succeeded = result.Succeeded };
 
             if (result.Succeeded)
+            {
+                bool roleExists = await _roleManager.RoleExistsAsync(Configuration.GetRole("User"));
+
+                if (!roleExists)
+                {
+                    IdentityRole role = new IdentityRole(Configuration.GetRole("User"));
+                    role.NormalizedName = Configuration.GetRole("User");
+
+                    _roleManager.CreateAsync(role).Wait();
+                }
+
+                //Kullanıcıya ilgili rol ataması yapılır.
+                _userManager.AddToRoleAsync(user, Configuration.GetRole("User")).Wait();
+
                 response.Message = "Kullanıcı başarıyla oluşturulmuştur.";
+            }
             else
+            {
                 foreach (var error in result.Errors)
                     response.Message += $"{error.Code} - {error.Description}\n";
+            }
 
             return response;
         }

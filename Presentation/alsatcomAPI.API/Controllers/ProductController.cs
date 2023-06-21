@@ -1,10 +1,12 @@
 ﻿using alsatcomAPI.Application.Features.Products.Commands;
 using alsatcomAPI.Application.Features.Products.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace alsatcomAPI.API.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase
@@ -24,6 +26,7 @@ namespace alsatcomAPI.API.Controllers
                 return BadRequest(response);
             return Ok(response);
         }
+
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllPassive([FromQuery] GetAllPassiveProductQueryRequest getAllPassiveProductQueryRequest)
         {
