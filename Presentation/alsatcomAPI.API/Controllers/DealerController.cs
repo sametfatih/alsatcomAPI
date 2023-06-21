@@ -24,6 +24,14 @@ namespace alsatcomAPI.API.Controllers
                 return BadRequest(response);
             return Ok(response);
         }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetAllPassive([FromQuery] GetAllPassiveDealerQueryRequest getAllPassiveDealerQueryRequest)
+        {
+            GetAllPassiveDealerQueryResponse response = await mediator.Send(getAllPassiveDealerQueryRequest);
+            if (!response.Success)
+                return BadRequest(response);
+            return Ok(response);
+        }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetById([FromQuery] GetByIdDealerQueryRequest getByIdDealerQueryRequest)

@@ -38,12 +38,17 @@ namespace alsatcomAPI.Application.Features.Dealers.Queries
         {
             try
             {
-                List<VM_Dealer> dealers = _dealerReadRepository.GetAll(false).Select(d => new VM_Dealer
+                List<VM_Dealer> dealers = _dealerReadRepository.GetWhere(d => d.Status == true ,false).Select(d => new VM_Dealer
                 {
+                    Id = d.Id.ToString(),
                     Name = d.Name,
                     Adress = d.Adress,
                     CompanyName = d.CompanyName,
-                    Description = d.Description
+                    Description = d.Description,
+                    Rating = d.Rating,
+                    Status = d.Status,
+                    CreatedDate = d.CreatedDate,
+                    UpdatedDate  = d.UpdatedDate,
                 }).ToList();
 
                 return new GetAllDealerQueryResponse(dealers, true , "Successful");

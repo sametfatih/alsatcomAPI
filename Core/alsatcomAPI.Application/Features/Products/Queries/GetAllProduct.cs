@@ -37,14 +37,18 @@ namespace alsatcomAPI.Application.Features.Products.Queries
         {
             try
             {
-                List<VM_Product> products = _productReadRepository.GetAll(false).Select(p => new VM_Product
+                List<VM_Product> products = _productReadRepository.GetWhere(p => p.Status == true,false).Select(p => new VM_Product
                 {
+                    Id = p.Id.ToString(),
                     Name = p.Name,
                     BrandName = p.BrandName,
                     Description = p.Description,
                     DiscountedPrice = p.DiscountedPrice,
                     Price = p.Price,
-                    Stock = p.Stock
+                    Stock = p.Stock,
+                    CreatedDate = p.CreatedDate,
+                    Status = p.Status,
+                    UpdatedDate = p.UpdatedDate
                 }).ToList();
 
                 return new GetAllProductQueryResponse(products, true, "Successful.");
