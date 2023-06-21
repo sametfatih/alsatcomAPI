@@ -16,4 +16,8 @@
     <ProjectReference Include="..\alsatcomAPI.Domain\alsatcomAPI.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\AppUsers\Queries\" />
+  </ItemGroup>
+
 </Project>

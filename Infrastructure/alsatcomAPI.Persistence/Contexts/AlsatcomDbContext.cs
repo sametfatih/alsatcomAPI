@@ -1,5 +1,7 @@
 ﻿using alsatcomAPI.Domain.Entities;
 using alsatcomAPI.Domain.Entities.Common;
+using alsatcomAPI.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace alsatcomAPI.Persistence.Contexts
 {
-    public class AlsatcomDbContext : DbContext
+    public class AlsatcomDbContext : IdentityDbContext<AppUser,AppRole,string>
     {
         public AlsatcomDbContext(DbContextOptions options) : base(options)
         {
